@@ -8,7 +8,7 @@ const db = getFirestore();
 exports.createBook = async (req, res) => {
     try {
         const { title, author, genre, pages, isAvailable = true } = req.body;
-
+    
         // Validation
         if (
             !title || !author || !genre ||

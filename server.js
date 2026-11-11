@@ -30,8 +30,8 @@ app.get('/Hello', (req, res) => {
     res.send('Hello from the server!');    
 })
 
-const bookRoutes = require('./src/routes/bookRoutes');
-app.use('/books', bookRoutes);
+const memberRoutes = require("./src/routes/memberRoutes");
+app.use("/members", memberRoutes);
 
 app.listen(3000, () => {
    console.log('Kitchen Manager is awake and listening on Port 3000');

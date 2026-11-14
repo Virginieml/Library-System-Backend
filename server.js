@@ -32,6 +32,13 @@ app.get('/Hello', (req, res) => {
 
 const memberRoutes = require("./src/routes/memberRoutes");
 app.use("/members", memberRoutes);
+const bookRoutes = require("./src/routes/bookRoutes");
+app.use("/books", bookRoutes);
+
+const swaggerUi = require('swagger-ui-express');
+const swaggerDocument = require('./swagger.json');
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.listen(3000, () => {
    console.log('Kitchen Manager is awake and listening on Port 3000');

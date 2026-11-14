@@ -1,0 +1,473 @@
+
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Library Management API",
+    "version": "1.0.0",
+    "description": "API documentation for the Library Management System, including Books and Members."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Development Server (Localhost)"
+    },
+    {
+      "url": "https://library-system-backend-pbfj.onrender.com",
+      "description": "Production Server (Render)"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Books",
+      "description": "Operations for managing library books"
+    },
+    {
+      "name": "Members",
+      "description": "Operations for managing library members"
+    }
+  ],
+  "paths": {
+    "/books/create": {
+      "post": {
+        "tags": ["Books"],
+        "summary": "Create a new book",
+        "description": "Adds a new book to the Firestore books collection.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "title",
+                  "author",
+                  "genre",
+                  "pages"
+                ],
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "example": "Introduction to Programming"
+                  },
+                  "author": {
+                    "type": "string",
+                    "example": "John Smith"
+                  },
+                  "genre": {
+                    "type": "string",
+                    "example": "Technology"
+                  },
+                  "pages": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "example": 350
+                  },
+                  "isAvailable": {
+                    "type": "boolean",
+                    "default": true,
+                    "example": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Book created successfully",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Book created successfully",
+                  "bookId": "QJtv9iKlyJZxEP0ActVQ"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing or invalid required fields"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+
+    "/books/getAll": {
+      "get": {
+        "tags": ["Books"],
+        "summary": "Get all books",
+        "description": "Retrieves all books from the Firestore books collection.",
+        "responses": {
+          "200": {
+            "description": "Books fetched successfully",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Books fetched successfully",
+                  "books": [
+                    {
+                      "id": "QJtv9iKlyJZxEP0ActVQ",
+                      "title": "Introduction to Programming",
+                      "author": "John Smith",
+                      "genre": "Technology",
+                      "pages": 350,
+                      "isAvailable": true
+                    },
+                    {
+                      "id": "iemVbyJvxlOTFiJ2Bk1a",
+                      "title": "Dork Diary",
+                      "author": "Rachel Renee Russell",
+                      "genre": "Tales form a Not-So-Graceflu Ice Princess",
+                      "pages": 347,
+                      "isAvailable": "True"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+
+    "/books/update/{id}": {
+      "put": {
+        "tags": ["Books"],
+        "summary": "Update an existing book",
+        "description": "Updates an existing book using its Firestore document ID. You can update one or more allowed fields.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The Firestore document ID of the book",
+            "schema": {
+              "type": "string",
+              "example": "QJtv9iKlyJZxEP0ActVQ"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "minProperties": 1,
+                "additionalProperties": false,
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "example": "Introduction to Programming"
+                  },
+                  "author": {
+                    "type": "string",
+                    "example": "John Smith"
+                  },
+                  "genre": {
+                    "type": "string",
+                    "example": "Technology"
+                  },
+                  "pages": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "example": 400
+                  },
+                  "isAvailable": {
+                    "type": "boolean",
+                    "example": false
+                  }
+                }
+              },
+              "example": {
+                "pages": 400,
+                "isAvailable": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Book successfully updated",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Book successfully updated!",
+                  "bookId": "QJtv9iKlyJZxEP0ActVQ",
+                  "updatedData": {
+                    "pages": 400,
+                    "isAvailable": false
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Empty request body, invalid fields, or invalid values"
+          },
+          "404": {
+            "description": "Book not found"
+          },
+          "500": {
+            "description": "Server error"
+          }
+        }
+      }
+    },
+
+    "/members/create": {
+      "post": {
+        "tags": ["Members"],
+        "summary": "Create a new member",
+        "description": "Creates a new library member and saves the information in Firestore. Full name and email are required.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "fullName",
+                  "email"
+                ],
+                "properties": {
+                  "fullName": {
+                    "type": "string",
+                    "example": "John Smith"
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "example": "john@example.com"
+                  },
+                  "phone": {
+                    "type": "string",
+                    "example": "0780000000"
+                  },
+                  "membershipType": {
+                    "type": "string",
+                    "example": "Student"
+                  },
+                  "isActive": {
+                    "type": "boolean",
+                    "example": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Member created successfully",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Member created successfully",
+                  "memberId": "member123"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Full name and email are required"
+          },
+          "500": {
+            "description": "Error creating member"
+          }
+        }
+      }
+    },
+
+    "/members/all": {
+      "get": {
+        "tags": ["Members"],
+        "summary": "Get all members",
+        "description": "Retrieves all members from the Firestore members collection.",
+        "responses": {
+          "200": {
+            "description": "Members fetched successfully",
+            "content": {
+              "application/json": {
+                "example": [
+                  {
+                    "id": "member123",
+                    "fullName": "John Smith",
+                    "email": "john@example.com",
+                    "phone": "0780000000",
+                    "membershipType": "Student",
+                    "isActive": true
+                  }
+                ]
+              }
+            }
+          },
+          "500": {
+            "description": "Error fetching members"
+          }
+        }
+      }
+    },
+
+    "/members/{id}": {
+      "get": {
+        "tags": ["Members"],
+        "summary": "Get a member by ID",
+        "description": "Retrieves one member using their Firestore document ID.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The Firestore document ID of the member",
+            "schema": {
+              "type": "string",
+              "example": "member123"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Member found successfully",
+            "content": {
+              "application/json": {
+                "example": {
+                  "id": "member123",
+                  "fullName": "John Smith",
+                  "email": "john@example.com",
+                  "phone": "0780000000",
+                  "membershipType": "Student",
+                  "isActive": true
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Member not found"
+          },
+          "500": {
+            "description": "Error fetching member"
+          }
+        }
+      },
+
+      "put": {
+        "tags": ["Members"],
+        "summary": "Update a member",
+        "description": "Updates an existing member using their Firestore document ID. Only the allowed member fields are updated.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The Firestore document ID of the member",
+            "schema": {
+              "type": "string",
+              "example": "member123"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "minProperties": 1,
+                "properties": {
+                  "fullName": {
+                    "type": "string",
+                    "example": "John Smith"
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "example": "john@example.com"
+                  },
+                  "phone": {
+                    "type": "string",
+                    "example": "0780000000"
+                  },
+                  "membershipType": {
+                    "type": "string",
+                    "example": "Teacher"
+                  },
+                  "isActive": {
+                    "type": "boolean",
+                    "example": true
+                  }
+                }
+              },
+              "example": {
+                "membershipType": "Teacher",
+                "isActive": true
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Member updated successfully",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Member updated successfully"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Empty request body or no valid fields provided"
+          },
+          "404": {
+            "description": "Member not found"
+          },
+          "500": {
+            "description": "Error updating member"
+          }
+        }
+      },
+
+      "delete": {
+        "tags": ["Members"],
+        "summary": "Delete a member",
+        "description": "Deletes a member from the Firestore members collection using their document ID.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The Firestore document ID of the member",
+            "schema": {
+              "type": "string",
+              "example": "member123"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Member deleted successfully",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Member deleted successfully"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Member not found"
+          },
+          "500": {
+            "description": "Error deleting member"
+          }
+        }
+      }
+    }
+  }
+}
